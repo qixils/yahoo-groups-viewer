@@ -99,7 +99,7 @@ fun isValid(group: String): Boolean {
         return false
     }
     val directory = File(baseURL.path)
-    val files = directory.list{_: File, filename: String -> filename.endsWith(".json")}
+    val files = directory.list { _: File, filename: String -> filename.endsWith(".json") }
     if (files == null) {
         messageIndices[group] = null
         return false
