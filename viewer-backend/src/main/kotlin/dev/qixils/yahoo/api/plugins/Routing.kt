@@ -12,6 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.File
 import java.time.OffsetDateTime
+import kotlin.math.ceil
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.typeOf
 
@@ -22,9 +23,15 @@ val gson: Gson = GsonBuilder()
     .create()
 val messages = HashMap<MessageReference, Message>()
 val messageIndices = HashMap<String, List<Int>?>()
+val allGroups = HashSet<String>()
+const val messagesPerPage = 50
 
 fun Application.configureRouting() {
     routing {
+        get("/groups") {
+            call.respond(mapOf("groups" to getGroups()))
+        }
+
         get("/message/{group}/{id}") {
             val group: String = call.parameters["group"] as String
             val id: Int? = call.parameters["id"]?.toIntOrNull()
@@ -50,6 +57,12 @@ fun Application.configureRouting() {
                     call.respond(message)
                 }
             }
+        }
+
+        get("/messages/{group}/pages") {
+            val group: String = call.parameters["group"] as String
+            val pages: Int = if (isValid(group)) ceil(messageIndices[group]!!.size / 50f).toInt() else 0
+            call.respond(mapOf("pages" to pages))
         }
 
         get("/messages/{group}/page/{page}") {
@@ -90,6 +103,15 @@ fun Application.configureRouting() {
     }
 }
 
+fun getGroups(): Set<String> {
+    if (allGroups.isNotEmpty()) return allGroups
+    val directoryURL = Application::class.java.getResource("/groups/")
+    val directory = File(directoryURL!!.path)
+    for (file in directory.list()!!)
+        allGroups.add(file)
+    return allGroups
+}
+
 fun isValid(group: String): Boolean {
     if (messageIndices.containsKey(group)) return messageIndices[group] != null
     val clazz = Application::class.java
@@ -105,7 +127,7 @@ fun isValid(group: String): Boolean {
         return false
     }
     val indices = ArrayList<Int>()
-    for (file in files as Array<String>) {
+    for (file in files) {
         val index: Int? = file.substringBeforeLast(".json").toIntOrNull()
         if (index != null)
             indices.add(index)
@@ -137,7 +159,7 @@ fun getMessageId(group: String, pageOffset: Int): Int? {
     assert(pageOffset >= 0)
     assert(isValid(group))
     val indices = messageIndices[group]!!
-    val offset = (pageOffset - 1) * 50
+    val offset = (pageOffset - 1) * messagesPerPage
     return if (offset < indices.size) indices[offset] else null
 }
 
@@ -149,7 +171,7 @@ fun pageExists(group: String, offset: Int): Boolean {
 fun getFromOffset(group: String, offset: Int): List<Message> {
     val messages = ArrayList<Message>()
     var nextId: Int? = getMessageId(group, offset)
-    while (messages.size < 50 && nextId != null) {
+    while (messages.size < messagesPerPage && nextId != null) {
         val message = fetchMessage(MessageReference(group, nextId)) ?: break
         messages.add(message)
         nextId = message.nextInTime
