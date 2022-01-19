@@ -1,12 +1,10 @@
 import base64
-import binascii
 import html
 import json
+import os
+import re
 import sys
 import typing
-import re
-import os
-from typing import Union
 
 from warcio.archiveiterator import ArchiveIterator
 
@@ -79,11 +77,13 @@ def run(params: typing.List[str]):
             with open(os.path.join(output_dir, message_id + ".json"), 'w', encoding='UTF-8') as output:
                 json.dump({
                     "id": int(message_id),
-                    "subject": data['subject'] if 'subject' in data else None,
-                    "displayName": html.unescape(data['from']),
-                    "realName": data['authorName'],
-                    "userName": data['profile'] if 'profile' in data else None,
-                    "userId": data['userId'],
+                    "subject": html.unescape(data['subject']) if 'subject' in data else None,
+                    "user": {
+                        "displayName": html.unescape(data['from']),
+                        "realName": data['authorName'],
+                        "userName": data['profile'] if 'profile' in data else None,
+                        "id": data['userId'],
+                    },
                     "postDate": data['postDate'],
                     "body": get_body(data['rawEmail']),
                     "nextInTime": data['nextInTime']
