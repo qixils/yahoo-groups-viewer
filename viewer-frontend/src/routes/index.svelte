@@ -4,6 +4,8 @@
 
 <svelte:head>
 	<title>Yahoo! Groups Viewer</title>
+	<meta name="description" content="A hub to view archives of emails sent to groups on the defunct website Yahoo! Groups.">
+	<meta property="og:description" content="A hub to view archives of emails sent to groups on the defunct website Yahoo! Groups.">
 </svelte:head>
 
 <!-- TODO: verically center? or at least fix the footer -->

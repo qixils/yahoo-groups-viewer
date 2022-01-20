@@ -1,0 +1,16 @@
+{
+    "name": "Yahoo! Groups Viewer",
+    "description": "Tool to view messages sent to groups from the now-defunct Yahoo! Groups.",
+    "icons": [
+        {
+            "src": "https://i.qixils.dev/icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "https://i.qixils.dev/icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}

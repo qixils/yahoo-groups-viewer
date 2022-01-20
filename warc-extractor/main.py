@@ -17,6 +17,7 @@ HYPHENS = re.compile(r"^[-_]+$")
 
 def get_body(email: str) -> str:
     # TODO: still imperfect; needs more tuning
+    # TODO: handle weird = truncations
     email = LINEBREAKS.sub("\n", email).strip()
     found: bool = False
     has_section: bool = False
