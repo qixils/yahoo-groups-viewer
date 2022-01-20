@@ -5,10 +5,10 @@
   export async function load({ params, fetch, session, stuff }) {
     const group = params.group
     const page = params.page
-    const main_res = await fetch(`http://localhost:8080/messages/${group}/page/${page}`);
-    const sub_res = await fetch(`http://localhost:8080/messages/${group}/pages`)
+    const main_res = await fetch(`http://localhost:8080/v1/messages/${group}/page/${page}`);
+    const sub_res = await fetch(`http://localhost:8080/v1/messages/${group}/pages`)
 
-    if (false) { // TODO: handle timeouts
+    if (false) { // TODO: handle timeouts & non-2xx/4xx response codes
       return {
         props: {
           "group": group,

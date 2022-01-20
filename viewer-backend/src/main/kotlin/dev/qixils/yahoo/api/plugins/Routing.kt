@@ -28,11 +28,11 @@ const val messagesPerPage = 50
 
 fun Application.configureRouting() {
     routing {
-        get("/groups") {
+        get("/v1/groups") {
             call.respond(mapOf("groups" to getGroups()))
         }
 
-        get("/message/{group}/{id}") {
+        get("/v1/message/{group}/{id}") {
             val group: String = call.parameters["group"] as String
             val id: Int? = call.parameters["id"]?.toIntOrNull()
             if (!isValid(group)) {
@@ -59,13 +59,13 @@ fun Application.configureRouting() {
             }
         }
 
-        get("/messages/{group}/pages") {
+        get("/v1/messages/{group}/pages") {
             val group: String = call.parameters["group"] as String
             val pages: Int = if (isValid(group)) ceil(messageIndices[group]!!.size / 50f).toInt() else 0
             call.respond(mapOf("pages" to pages))
         }
 
-        get("/messages/{group}/page/{page}") {
+        get("/v1/messages/{group}/page/{page}") {
             val group: String = call.parameters["group"] as String
             val page: Int? = call.parameters["page"]?.toIntOrNull()
             if (!isValid(group)) {
