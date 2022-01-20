@@ -2,29 +2,38 @@
     import "../app.postcss";
 </script>
 
-<slot></slot>
+<div id="meta-container">
+  <div id="main-container"><slot></slot></div>
 
-<!-- TODO: snap footer to bottom -->
-<footer class="text-zinc-800 dark:text-zinc-300">
-  <p>
-    Created with ❤️ by
-    <a class="text-fuchsia-700 underline" href="https://qixils.dev/">qixils.dev</a>
-  </p>
-  <p>
-    This website's
-    <a class="text-fuchsia-700 underline" href="https://github.com/qixils/yahoo-groups-viewer">source code</a>
-    has been made publicly available under the
-    <a class="text-fuchsia-700 underline" href="https://github.com/qixils/yahoo-groups-viewer/blob/master/LICENSE">MIT license</a>.
-  </p>
-</footer>
+  <footer class="text-zinc-800 dark:text-zinc-300">
+    <p>
+      Created with ❤️ by
+      <a class="text-fuchsia-700 underline" href="https://qixils.dev/">qixils.dev</a>
+    </p>
+    <p>
+      This website's
+      <a class="text-fuchsia-700 underline" href="https://github.com/qixils/yahoo-groups-viewer">source code</a>
+      has been made publicly available under the
+      <a class="text-fuchsia-700 underline" href="https://github.com/qixils/yahoo-groups-viewer/blob/master/LICENSE">MIT license</a>.
+    </p>
+  </footer>
+</div>
 
 <style>
-  footer {
+  #meta-container {
+    padding: 1rem;
+    margin: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    min-height: 100vh;
+  }
+
+  footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    padding: 40px 40px 0 40px;
+    justify-content: center;
   }
 
   footer a {
