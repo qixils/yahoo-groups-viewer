@@ -79,8 +79,8 @@
 </svelte:head>
 
 <header class="text-center">
-  <h1 class="yahoo text-3xl"><a href="/">Yahoo! Groups Viewer</a></h1>
-  <h2 class="text-xl">Group: {group} ∙ Page {page} of {pages}</h2>
+  <h1 class="yahoo-header"><a href="/">Yahoo! Groups Viewer</a></h1>
+  <h2 class="text-lg">Group: {group} ∙ Page {page} of {pages}</h2>
   <hr class="mt-4 border-y-zinc-400 dark:border-y-zinc-700">
 </header>
 
