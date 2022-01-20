@@ -15,9 +15,8 @@
 </script>
 
 <!-- TODO: may have to hide .svelte files from search engines in nginx -->
-<!-- TODO: horizontal center -->
 <nav aria-label="Page Navigation">
-  <ul class="inline-flex items-center -space-x-px">
+  <ul class="inline-flex items-center -space-x-px justify-center w-full">
 
     {#if current !== 1}
       <li>
