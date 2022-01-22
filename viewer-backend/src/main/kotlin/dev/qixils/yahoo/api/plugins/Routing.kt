@@ -19,7 +19,6 @@ import kotlin.reflect.typeOf
 
 val gson: Gson = GsonBuilder()
     .serializeNulls()
-    .registerTypeAdapter(typeOf<OffsetDateTime>().javaType, OffsetDateTimeAdapter())
     .disableHtmlEscaping()
     .create()
 val messages = HashMap<MessageReference, Message?>()
@@ -262,9 +261,9 @@ fun search(call: ApplicationCall, group: String): SearchResults {
             continue
         if ("userName" in params && params["displayName"] != getUser(message.id)?.userName)
             continue
-        if (after != null && message.postDate.toEpochSecond() < after)
+        if (after != null && message.postDate < after)
             continue
-        if (before != null && message.postDate.toEpochSecond() > before)
+        if (before != null && message.postDate > before)
             continue
 
         // final handling
