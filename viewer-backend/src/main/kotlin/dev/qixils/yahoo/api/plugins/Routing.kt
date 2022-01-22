@@ -9,6 +9,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.File
 import java.time.OffsetDateTime
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.math.ceil
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.typeOf
@@ -22,7 +26,7 @@ val messages = HashMap<MessageReference, Message?>()
 val users = HashMap<Int, User?>()
 val messageIndices = HashMap<String, List<Int>?>()
 val allGroups = HashSet<String>()
-const val messagesPerPage = 50
+const val MESSAGES_PER_PAGE = 50
 
 fun Application.configureRouting() {
     routing {
@@ -116,6 +120,22 @@ fun Application.configureRouting() {
                 )
             }
         }
+
+        get("/v1/messages/{group}/search") {
+            val group: String = call.parameters["group"] as String
+            if (!isValid(group)) {
+                call.respond(
+                    HttpStatusCode.NotFound,
+                    mapOf("error" to "A group by the name of '$group' could not be found")
+                )
+            } else {
+                try {
+                    call.respond(search(call, group))
+                } catch (exc: java.lang.IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to exc.message))
+                }
+            }
+        }
     }
 }
 
@@ -188,7 +208,7 @@ fun getMessageId(group: String, pageOffset: Int): Int? {
     assert(pageOffset >= 0)
     assert(isValid(group))
     val indices = messageIndices[group]!!
-    val offset = (pageOffset - 1) * messagesPerPage
+    val offset = (pageOffset - 1) * MESSAGES_PER_PAGE
     return if (offset < indices.size) indices[offset] else null
 }
 
@@ -200,10 +220,63 @@ fun pageExists(group: String, offset: Int): Boolean {
 fun getFromOffset(group: String, offset: Int): List<Message> {
     val messages = ArrayList<Message>()
     var nextId: Int? = getMessageId(group, offset)
-    while (messages.size < messagesPerPage && nextId != null) {
+    while (messages.size < MESSAGES_PER_PAGE && nextId != null) {
         val message = fetchMessage(MessageReference(group, nextId)) ?: break
         messages.add(message)
         nextId = message.nextInTime
     }
     return messages
+}
+
+fun search(call: ApplicationCall, group: String): SearchResults {
+    if (!isValid(group))
+        throw IllegalArgumentException("Provided group is not valid")
+    val params = call.request.queryParameters
+    if ("authorId" in params && params["authorId"]?.toIntOrNull() == null)
+        throw IllegalArgumentException("'authorId' parameter '${params["authorId"]}' could not be parsed as an integer")
+    if ("offset" in params && params["offset"]?.toIntOrNull() == null)
+        throw IllegalArgumentException("'offset' parameter '${params["offset"]}' could not be parsed as an integer")
+    if ("after" in params && params["after"]?.toIntOrNull() == null)
+        throw IllegalArgumentException("'after' parameter '${params["after"]}' could not be parsed as an integer")
+    if ("before" in params && params["before"]?.toIntOrNull() == null)
+        throw IllegalArgumentException("'before' parameter '${params["before"]}' could not be parsed as an integer")
+
+    val offset: Int = params["offset"]?.toInt() ?: 0
+    val authorId: Int? = params["authorId"]?.toInt()
+    val after: Int? = params["after"]?.toInt()
+    val before: Int? = params["before"]?.toInt()
+
+    val messages = ArrayList<Message>()
+    var skipped = 0
+    var metaIndex = 0
+    val indices = messageIndices[group]!!
+    var moreResultsFound = false
+    while (metaIndex < indices.size) {
+        val message: Message = fetchMessage(MessageReference(group, indices[metaIndex])) ?: continue
+        metaIndex += 1
+
+        // handle search queries
+        if (authorId != null && authorId != message.authorId)
+            continue
+        if ("displayName" in params && params["displayName"] != message.alias)
+            continue
+        if ("userName" in params && params["displayName"] != getUser(message.id)?.userName)
+            continue
+        if (after != null && message.postDate.toEpochSecond() < after)
+            continue
+        if (before != null && message.postDate.toEpochSecond() > before)
+            continue
+
+        // final handling
+        if (skipped < offset) {
+            skipped += 1
+            continue
+        } else if (messages.size == MESSAGES_PER_PAGE) {
+            moreResultsFound = true
+            break
+        } else {
+            messages.add(message)
+        }
+    }
+    return SearchResults(messages, messages.size < MESSAGES_PER_PAGE || !moreResultsFound)
 }
