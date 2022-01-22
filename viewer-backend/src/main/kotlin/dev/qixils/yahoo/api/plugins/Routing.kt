@@ -2,10 +2,7 @@ package dev.qixils.yahoo.api.plugins
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import dev.qixils.yahoo.api.Message
-import dev.qixils.yahoo.api.MessageReference
-import dev.qixils.yahoo.api.OffsetDateTimeAdapter
-import dev.qixils.yahoo.api.Page
+import dev.qixils.yahoo.api.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -21,7 +18,8 @@ val gson: Gson = GsonBuilder()
     .registerTypeAdapter(typeOf<OffsetDateTime>().javaType, OffsetDateTimeAdapter())
     .disableHtmlEscaping()
     .create()
-val messages = HashMap<MessageReference, Message>()
+val messages = HashMap<MessageReference, Message?>()
+val users = HashMap<Int, User?>()
 val messageIndices = HashMap<String, List<Int>?>()
 val allGroups = HashSet<String>()
 const val messagesPerPage = 50
@@ -30,6 +28,24 @@ fun Application.configureRouting() {
     routing {
         get("/v1/groups") {
             call.respond(mapOf("groups" to getGroups()))
+        }
+
+        get("/v1/user/{id}") {
+            val id: Int? = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(
+                    HttpStatusCode.BadRequest,
+                    mapOf("error" to "The argument 'id' could not be parsed")
+                )
+            } else if (!userExists(id)) {
+                call.respond(
+                    HttpStatusCode.NotFound,
+                    mapOf("error" to "A user with the ID of '$id' could not be found")
+                )
+            } else {
+                val user: User = getUser(id)!!
+                call.respond(user)
+            }
         }
 
         get("/v1/message/{group}/{id}") {
@@ -103,10 +119,25 @@ fun Application.configureRouting() {
     }
 }
 
+fun userExists(id: Int): Boolean {
+    return getUser(id) != null
+}
+
+fun getUser(id: Int): User? {
+    if (users.containsKey(id)) return users[id]
+    val file = File("data/groups/${id}.json")
+    if (!file.exists()) {
+        users[id] = null
+        return null
+    }
+    val user: User = gson.fromJson(File("data/groups/${id}.json").readText(), User::class.java)
+    users[id] = user
+    return user
+}
+
 fun getGroups(): Set<String> {
     if (allGroups.isNotEmpty()) return allGroups
-    val directoryURL = Application::class.java.getResource("/groups/")
-    val directory = File(directoryURL!!.path)
+    val directory = File("data/groups/")
     for (file in directory.list()!!)
         allGroups.add(file)
     return allGroups
@@ -114,13 +145,11 @@ fun getGroups(): Set<String> {
 
 fun isValid(group: String): Boolean {
     if (messageIndices.containsKey(group)) return messageIndices[group] != null
-    val clazz = Application::class.java
-    val baseURL = clazz.getResource("/groups/$group/")
-    if (baseURL == null) {
+    val directory = File("data/groups/$group/")
+    if (!directory.exists()) {
         messageIndices[group] = null
         return false
     }
-    val directory = File(baseURL.path)
     val files = directory.list { _: File, filename: String -> filename.endsWith(".json") }
     if (files == null) {
         messageIndices[group] = null
@@ -142,14 +171,14 @@ fun isValid(group: String): Boolean {
 }
 
 fun fetchMessage(reference: MessageReference): Message? {
-    val cache: Message? = messages[reference]
-    if (cache != null)
-        return cache
+    if (messages.containsKey(reference)) return messages[reference]
 
-    val text: String = Application::class.java
-        .getResource("/groups/${reference.group}/${reference.id}.json")
-        ?.readText() ?: return null
-
+    val file = File("data/groups/${reference.group}/${reference.id}.json")
+    if (!file.exists()) {
+        messages[reference] = null
+        return null
+    }
+    val text: String = file.readText()
     val value: Message = gson.fromJson(text, Message::class.java)
     messages[reference] = value
     return value

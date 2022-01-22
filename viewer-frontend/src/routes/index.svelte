@@ -33,6 +33,7 @@ import Error from "$lib/Error.svelte";
 			<p>Loading groups, please wait...</p>
 		{:then group_data}
 			<!-- Form theming adopted from https://flowbite.com/docs/components/forms/ -->
+      <!-- TODO: once form is expanded, should totally use the fancy gradient outline button from https://flowbite.com/docs/components/buttons/ -->
 			<select bind:value={selected} on:change='{() => window.location.href = "/group/" + selected + "/1"}' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 				{#each group_data.groups as group}
 					<option value={group}>{group}</option>
