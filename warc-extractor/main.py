@@ -12,7 +12,7 @@ MESSAGE_ID = re.compile(r"^org\.archive\.yahoogroups:v1/group/[a-z_]+/message/(\
 LINEBREAKS = re.compile(r"\r?\n")
 SECTION_PREFIX = re.compile(r"^(?:-{5,}_?=_(?:Next)?Part_|--\d+-\d+-\d+=:\d+|Content-Type:)")  # some bizarre prefix that is found in some messages
 SECTION_SUFFIX = re.compile(r"^Yahoo! Mail")
-HYPHENS = re.compile(r"^[-_]+$")
+HYPHENS = re.compile(r"^[-_*]+$")
 FAKE_ID_MAX = 1000000
 
 
@@ -22,7 +22,6 @@ def get_body(email: str) -> str:
     found: bool = False
     has_section: bool = False
     lines = []
-    line_count = 0
     for line in email.split('\n'):
         line = line.strip()
         line_has_section = SECTION_PREFIX.match(line)

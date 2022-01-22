@@ -1,44 +1,45 @@
-<script context="module">
+<script context="module" lang="ts">
   /** @type {import('@sveltejs/kit').Load} */
   export async function load({ params, fetch, session, stuff }) {
-    const group = params.group
-    const page = params.page
-    const main_res = await fetch(`http://localhost:8080/v1/messages/${group}/page/${page}`);
-    const sub_res = await fetch(`http://localhost:8080/v1/messages/${group}/pages`)
+    const group: string = params.group
+    const page: any = params.page
+    const main_res: Response = await fetch(`http://localhost:8080/v1/messages/${group}/page/${page}`);
+    const main_res_json: any = await main_res.json();
 
-    if (false) { // TODO: handle timeouts & non-2xx/4xx response codes
+    // TODO: handle timeouts & rejects
+
+    if (main_res_json.messages === undefined && main_res_json.error === undefined) {
       return {
         props: {
           "group": group,
           "page": [page],
           "pages": 0,
-          "page_data": null // TODO: create fake object with timeout error
+          "page_data": {
+            error: 'The API server threw an unexpected exception (' + main_res.status + ')',
+            getError() { return this.error; }
+          }
         }
       }
     }
+
+    const sub_res: Response = await fetch(`http://localhost:8080/v1/messages/${group}/pages`)
 
     return {
       props: {
         "group": group,
         "page": page,
         "pages": (await sub_res.json()).pages,
-        "page_data": await main_res.json()
+        "page_data": main_res_json
       }
     }
   }
 </script>
 
 <script lang="ts">
-  interface User {
-    id: number;
-    userName: string | null;
-    realName: string;
-    displayName: string;
-  }
-
   interface Message {
     id: number;
-    user: User;
+    authorId: number;
+    alias: string;
     postDate: number;
     subject: string | null;
     body: string;
@@ -57,6 +58,9 @@
   export let pages: number;
   export let page_data: Page;
 
+  page = Number(page);
+  pages = Number(pages);
+
   import Pagination from '$lib/Pagination.svelte';
   import Error from '$lib/Error.svelte';
 
@@ -74,12 +78,14 @@
   <meta name="description" content="An archive of emails sent to the {group} group on the defunct website Yahoo! Groups.">
   <meta property="og:description" content="An archive of emails sent to the {group} group on the defunct website Yahoo! Groups.">
   <meta name="robots" content="noindex">
+  <meta property="og:url" content="https://yahoo.qixils.dev/group/{group}/{page}">
+  <link rel="canonical" href="https://yahoo.qixils.dev/group/{group}/{page}">
 </svelte:head>
 
 <header class="text-center">
-  <h1 class="yahoo-header"><a href="/">Yahoo! Groups Viewer</a></h1>
+  <h1 class="yahoo-header"><a href="/" class="no-url">Yahoo! Groups Viewer</a></h1>
   <h2 class="text-lg">Group: {group} ∙ Page {page} of {pages}</h2>
-  <hr class="mt-4 border-y-zinc-400 dark:border-y-zinc-700">
+  <hr class="mt-4 mb-1 border-y-zinc-400 dark:border-y-zinc-700">
 </header>
 
 <main>
@@ -88,20 +94,15 @@
   {:else}
     <div id="messages">
       {#each page_data.messages as message (message.id)}
-      <div class="py-6 border-zinc-200 dark:border-zinc-800 border-b-2 last:border-b-0">
-        <p>
-          <span class="font-extrabold">{message.user.realName}</span>
-          {#if message.user.userName !== null && message.user.userName !== message.user.realName}
-            <span class="text-zinc-500 dark:text-zinc-400">{message.user.userName}</span>
-          {/if}
-        </p>
+      <div class="py-2 border-zinc-200 dark:border-zinc-800 border-b-2 last:border-b-0">
+        <p class="font-extrabold my-1"><a href="/user/{message.authorId}" class="no-url">{message.alias}</a></p>
         <p>
           <span class="font-semibold">Subject:</span>
           {#if message.subject !== null}
             {message.subject}
           {/if}
         </p>
-        <div class="mt-2">
+        <div class="my-2 p-1 pl-3 border-l-4 border-zinc-300 dark:border-zinc-700">
           {#each split(filterHTML(message.body)) as line}
             <p>{@html line}</p>
           {/each}

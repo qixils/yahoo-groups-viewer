@@ -144,12 +144,12 @@ fun userExists(id: Int): Boolean {
 
 fun getUser(id: Int): User? {
     if (users.containsKey(id)) return users[id]
-    val file = File("data/groups/${id}.json")
+    val file = File("data/users/${id}.json")
     if (!file.exists()) {
         users[id] = null
         return null
     }
-    val user: User = gson.fromJson(File("data/groups/${id}.json").readText(), User::class.java)
+    val user: User = gson.fromJson(File("data/users/${id}.json").readText(), User::class.java)
     users[id] = user
     return user
 }
