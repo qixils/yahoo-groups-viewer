@@ -63,14 +63,7 @@
 
   import Pagination from '$lib/Pagination.svelte';
   import Error from '$lib/Error.svelte';
-
-  function split(body: string): string[] {
-    return body.split("\n\n");
-  }
-
-  function filterHTML(body: string): string {
-    return body; // TODO basic HTML filtering (remove styles and tags besides <a> and <table>-related stuff)
-  }
+  import Messages from '$lib/Messages.svelte';
 </script>
 
 <svelte:head>
@@ -92,25 +85,7 @@
   {#if page_data.error !== undefined}
     <Error error_text="An error occurred while trying to load this page: {page_data.error}" />
   {:else}
-    <div id="messages">
-      {#each page_data.messages as message (message.id)}
-      <div class="py-2 border-zinc-200 dark:border-zinc-800 border-b-2 last:border-b-0">
-        <p class="font-extrabold my-1"><a href="/user/{message.authorId}" class="no-url">{message.alias}</a></p>
-        <p>
-          <span class="font-semibold">Subject:</span>
-          {#if message.subject !== null}
-            {message.subject}
-          {/if}
-        </p>
-        <div class="my-2 p-1 pl-3 border-l-4 border-zinc-300 dark:border-zinc-700">
-          {#each split(filterHTML(message.body)) as line}
-            <p>{@html line}</p>
-          {/each}
-        </div>
-      </div>
-    {/each}
-    </div>
-
+    <Messages messages={page_data.messages}/>
     <Pagination current={page} end={pages}/>
   {/if}
 </main>
