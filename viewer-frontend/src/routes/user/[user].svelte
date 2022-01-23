@@ -95,7 +95,7 @@
           {#if user.userName !== null}
             {user.userName}
           {:else}
-            &lt;not applicable&gt;
+            &lt;unavailable&gt;
           {/if}
         </td>
       </tr>

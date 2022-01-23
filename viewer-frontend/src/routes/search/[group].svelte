@@ -68,7 +68,7 @@
     });
   }
 
-  const observer = browser ? new IntersectionObserver(load_more, {"threshold": 0.5}) : null;
+  const observer = browser ? new IntersectionObserver(load_more, {}) : null;
 
   if (browser && results.error === undefined) {
     window.addEventListener("sveltekit:start", event => {

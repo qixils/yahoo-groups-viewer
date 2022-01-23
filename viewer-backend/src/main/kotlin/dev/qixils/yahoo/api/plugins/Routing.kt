@@ -28,6 +28,7 @@ val allGroups = HashSet<String>()
 const val MESSAGES_PER_PAGE = 50
 
 // TODO: setup 404 page like {"error":"API endpoint not found"}
+// TODO: init CORS
 
 fun Application.configureRouting() {
     routing {

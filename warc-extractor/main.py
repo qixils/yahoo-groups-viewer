@@ -15,6 +15,7 @@ SECTION_PREFIX = re.compile(r"^(?:-{5,}_?=_(?:Next)?Part_|--\d+-\d+-\d+=:\d+|Con
 SECTION_SUFFIX = re.compile(r"^Yahoo! Mail")
 HYPHENS = re.compile(r"^[-_*]+$")
 FAKE_ID_MAX = 1000000
+USERNAME = re.compile(r"^[A-Za-z0-9.@_]{4,40}$")
 
 
 def cleanup_output(body: str) -> str:
@@ -91,6 +92,8 @@ class Extractor:
 
     def save_user_data(self):
         for user_id, user_data in self.user_data.items():
+            if user_data["userName"] is not None and USERNAME.match(user_data["userName"]) is None:
+                print(f"User {user_data['userName']} failed regex")
             user_data["knownAliases"] = list(set(user_data["knownAliases"]))
             user_data["knownGroups"] = list(set(user_data["knownGroups"]))
             with open(os.path.join(self.output_dir_base, "users", f"{user_id}.json"), 'w') as f:
