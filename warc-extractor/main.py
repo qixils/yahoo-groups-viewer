@@ -10,10 +10,19 @@ from warcio.archiveiterator import ArchiveIterator
 
 MESSAGE_ID = re.compile(r"^org\.archive\.yahoogroups:v1/group/[a-z_]+/message/(\d+)/raw$")
 LINEBREAKS = re.compile(r"\r?\n")
-SECTION_PREFIX = re.compile(r"^(?:-{5,}_?=_(?:Next)?Part_|--\d+-\d+-\d+=:\d+|Content-Type:)")  # some bizarre prefix that is found in some messages
+# bizarre prefixes that are found in some messages
+SECTION_PREFIX = re.compile(r"^(?:-{5,}_?=_(?:Next)?Part_|--\d+-\d+-\d+=:\d+|Content-Type:|--[0-9A-Za-z]{36,})|Content-Transfer-Encoding:")
 SECTION_SUFFIX = re.compile(r"^Yahoo! Mail")
 HYPHENS = re.compile(r"^[-_*]+$")
 FAKE_ID_MAX = 1000000
+
+
+def cleanup_output(body: str) -> str:
+    body = LINEBREAKS.sub('\n', body)
+    lines = list(map(lambda x: x.strip(), body.split('\n')))
+    while len(lines) > 0 and HYPHENS.match(lines[-1]):
+        lines = lines[:-1]
+    return html.unescape('\n'.join(lines).strip())
 
 
 def get_body(email: str) -> str:
@@ -43,17 +52,16 @@ def get_body(email: str) -> str:
         elif len(line) == 0:
             found = True
 
-    # remove trailing "--------"s
-    while len(lines) > 0 and HYPHENS.match(lines[-1]):
-        lines = lines[:-1]
-
-    output = html.unescape('\n'.join(lines).strip())
+    output = cleanup_output('\n'.join(lines))
     if len(output) == 0:
         with open('possible_errors.txt', 'a', encoding='UTF-8') as f:
             f.write(email + "\n$%$%$%$%$%$%$%$%$%$%\n")
+        return ""
+
     try:
         # some bodies are base64-encoded
-        return base64.b64decode(output.replace('\n', ''), validate=True).decode('UTF-8')
+        return cleanup_output(base64.b64decode(output.replace('\n', ''), validate=True).decode('UTF-8'))
+    # b64decode lies about the exceptions it throws, hence the general clause
     except Exception:
         return output
 
@@ -90,7 +98,7 @@ class Extractor:
 
     def run(self, input_path: typing.Optional[str] = None):
         input_path = input_path if input_path is not None else "archives"
-        for filename in os.listdir(input_path):
+        for filename in sorted(os.listdir(input_path), key=lambda x: int(x.split('.')[1])):
             group = filename.split('.')[0]
             filename = os.path.join(input_path, filename)
             group_output_dir = os.path.join(self.output_dir_base, "groups", group)

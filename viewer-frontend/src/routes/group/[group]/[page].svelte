@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   /** @type {import('@sveltejs/kit').Load} */
-  export async function load({ params, fetch, session, stuff }) {
+  export async function load({ params, fetch }) {
     const group: string = params.group
     const page: any = params.page
     const main_res: Response = await fetch(`http://localhost:8080/v1/messages/${group}/page/${page}`);
@@ -36,22 +36,10 @@
 </script>
 
 <script lang="ts">
-  interface Message {
-    id: number;
-    authorId: number;
-    alias: string;
-    postDate: number;
-    subject: string | null;
-    body: string;
-    nextInTime: number;
-  }
-
-  interface Page {
-    messages: Message[];
-    previousPageIndex: number | null;
-    nextPageIndex: number | null;
-    error?: string;
-  }
+  import type Page from '$lib/Constants';
+  import Pagination from '$lib/Pagination.svelte';
+  import Error from '$lib/Error.svelte';
+  import Messages from '$lib/Messages.svelte';
 
   export let group: string;
   export let page: number;
@@ -60,10 +48,6 @@
 
   page = Number(page);
   pages = Number(pages);
-
-  import Pagination from '$lib/Pagination.svelte';
-  import Error from '$lib/Error.svelte';
-  import Messages from '$lib/Messages.svelte';
 </script>
 
 <svelte:head>

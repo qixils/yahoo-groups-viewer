@@ -22,6 +22,7 @@
 <div id="messages">
   {#each messages as message (message.id)}
     <div class="py-2 border-zinc-200 dark:border-zinc-800 border-b-2 last:border-b-0">
+      <!-- TODO (critical): display post date+time !! -->
       <p class="font-extrabold my-1"><a href="/user/{message.authorId}" class="no-url">{message.alias}</a></p>
       <p>
         <span class="font-semibold">Subject:</span>

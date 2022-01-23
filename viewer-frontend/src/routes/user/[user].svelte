@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   /** @type {import('@sveltejs/kit').Load} */
-  export async function load({ params, fetch, session, stuff }) {
+  export async function load({ params, fetch }) {
     const user: any = params.user
     const user_res: Response = await fetch(`http://localhost:8080/v1/user/${user}`);
     const user_res_json: any = await user_res.json();
@@ -29,18 +29,11 @@
 </script>
 
 <script lang="ts">
+  import type User from '$lib/Constants';
   import Error from "$lib/Error.svelte";
   import Info from "$lib/Info.svelte";
-import Warning from "$lib/Warning.svelte";
+  import Warning from "$lib/Warning.svelte";
 
-  interface User {
-    id: number,
-    userName: string | null,
-    knownAliases: string[],
-    knownGroups: string[],
-    fakeAccount: boolean,
-    error?: string
-  }
   export let user_id: any;
   export let user: User;
 
@@ -60,6 +53,7 @@ import Warning from "$lib/Warning.svelte";
   <title>Yahoo! Groups Viewer ∙ {displayName}'s Profile</title>
   <meta name="description" content="{displayName}'s profile from the defunct website Yahoo! Groups.">
   <meta property="og:description" content="{displayName}'s profile from the defunct website Yahoo! Groups.">
+  <meta name="robots" content="noindex">
   <meta property="og:url" content="https://yahoo.qixils.dev/user/{user}">
   <link rel="canonical" href="https://yahoo.qixils.dev/user/{user}">
 </svelte:head>

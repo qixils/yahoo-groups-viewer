@@ -27,6 +27,8 @@ val messageIndices = HashMap<String, List<Int>?>()
 val allGroups = HashSet<String>()
 const val MESSAGES_PER_PAGE = 50
 
+// TODO: setup 404 page like {"error":"API endpoint not found"}
+
 fun Application.configureRouting() {
     routing {
         get("/v1/groups") {
@@ -257,9 +259,9 @@ fun search(call: ApplicationCall, group: String): SearchResults {
         // handle search queries
         if (authorId != null && authorId != message.authorId)
             continue
-        if ("displayName" in params && params["displayName"] != message.alias)
+        if ("displayName" in params && !params["displayName"].equals(message.alias, ignoreCase = true))
             continue
-        if ("userName" in params && params["displayName"] != getUser(message.id)?.userName)
+        if ("userName" in params && !params["userName"].equals(getUser(message.authorId)?.userName, ignoreCase = true))
             continue
         if (after != null && message.postDate < after)
             continue
