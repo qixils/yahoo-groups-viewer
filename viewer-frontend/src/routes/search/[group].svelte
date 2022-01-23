@@ -74,7 +74,7 @@
     window.addEventListener("sveltekit:start", event => {
       const element = document.querySelector("#beacon");
       if (element !== null) {
-        // observer.observe(element);
+        observer.observe(element);
       }
     });
   }
