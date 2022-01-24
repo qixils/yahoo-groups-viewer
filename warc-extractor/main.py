@@ -141,7 +141,9 @@ class Extractor:
 
     def run(self, input_path: typing.Optional[str] = None):
         input_path = input_path if input_path is not None else "archives"
-        for filename in sorted(os.listdir(input_path), key=lambda x: int(x.split('.')[1])):
+        for filename in sorted(
+                filter(lambda x: x.endswith('.warc'), os.listdir(input_path)),
+                key=lambda x: int(x.split('.')[1])):
             group = filename.split('.')[0]
             print(f"Processing {group}")
             filename = os.path.join(input_path, filename)
