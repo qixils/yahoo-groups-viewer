@@ -6,7 +6,7 @@
 	interface GroupData {
 		groups: string[];
 	}
-	let groups_promise: Promise<GroupData> = fetch("http://localhost:8080/v1/groups").then(response => response.json())
+	let groups_promise: Promise<GroupData> = fetch("https://api.yahoo.qixils.dev/v1/groups").then(response => response.json())
 
     import Error from "$lib/Error.svelte";
 	let selected: string;
@@ -40,7 +40,7 @@
 				{/each}
 			</select>
 		{:catch error}
-			<Error error_text="The API server failed to correctly respond and may be undergoing maintenance. The provided error message is <i>{error.message}</i>" />
+			<Error error_text="The API server failed to correctly respond and may be undergoing maintenance. The provided error message is <b>{error.message}</b>" />
 		{/await}
 	</div>
 
@@ -54,5 +54,14 @@
 		me on <a href="https://twitter.com/lexikiq">Twitter</a> or fire an email to
 		<span class="text-pink-500 underline">&lt;my first name&gt; at this domain</span>.
 		(Apologies for the obfuscation; I'd like to keep my inbox safe from spam bots 😅)
+	</p>
+
+	<p>
+		Note: The data on this website comes from Archive Team's periodic archives of Yahoo! Groups between
+		October 2015 and October 2018, with most of the Mario Kart groups being archived around late 2017
+		and early 2018. This means that a few years of data before the shutdown of Yahoo! Groups are missing.
+		Archives of groups after the shutdown of the website exist, however they are in a format which makes
+		searching and extracting data from them particularly difficult. This data will nonetheless eventually
+		be extracted, however this may take several weeks or months depending on my free time and patience.
 	</p>
 </main>

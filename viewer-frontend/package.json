@@ -1,6 +1,6 @@
 {
   "name": "viewer-frontend",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
@@ -11,20 +11,22 @@
     "lint": "eslint --ignore-path .gitignore ."
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "next",
+    "@sveltejs/adapter-node": "^1.0.0-next.66",
     "@sveltejs/kit": "next",
+    "@types/sanitize-html": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "autoprefixer": "^10.4.2",
     "eslint": "^7.32.0",
     "eslint-plugin-svelte3": "^3.2.1",
+    "postcss": "^8.4.5",
+    "sanitize-html": "^2.6.1",
     "svelte": "^3.44.0",
     "svelte-check": "^2.2.6",
     "svelte-preprocess": "^4.10.1",
+    "tailwindcss": "^3.0.12",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.3",
-    "postcss": "^8.4.5",
-    "autoprefixer": "^10.4.2",
-    "tailwindcss": "^3.0.12"
+    "typescript": "^4.4.3"
   },
   "type": "module"
 }

@@ -5,17 +5,23 @@ import os
 import re
 import sys
 import typing
+import email
+from email.message import EmailMessage
+from email.policy import default as policy_default
+from email.parser import Parser
 
 from warcio.archiveiterator import ArchiveIterator
 
 MESSAGE_ID = re.compile(r"^org\.archive\.yahoogroups:v1/group/[a-z_]+/message/(\d+)/raw$")
 LINEBREAKS = re.compile(r"\r?\n")
 # bizarre prefixes that are found in some messages
-SECTION_PREFIX = re.compile(r"^(?:-{5,}_?=_(?:Next)?Part_|--\d+-\d+-\d+=:\d+|Content-Type:|--[0-9A-Za-z]{36,})|Content-Transfer-Encoding:")
-SECTION_SUFFIX = re.compile(r"^Yahoo! Mail")
+SECTION_PREFIX = re.compile(r"^(?:-{5,}_?=_(?:Next)?Part_|--_?[0-9a-f]+-[0-9a-f]+-[0-9a-f]+(?:=:|-)[0-9a-f]+|Content-Type:|--[0-9A-Za-z]{36,})|Content-[Tt]ransfer-[Ee]ncoding:|--Boundary")
+# Yahoo! and antivirus software loved advertising themselves in email footers
+SECTION_SUFFIX = re.compile(r"^(?:Yahoo! Mail|Yahoo! FareChase|No virus found in this outgoing message.|YAHOO! GROUPS LINKS|Yahoo! Music Unlimited|Do You Yahoo!\?|Yahoo! Messenger|Yahoo! Personals|Yahoo! Model Search|Yahoo! DSL)")
 HYPHENS = re.compile(r"^[-_*]+$")
 FAKE_ID_MAX = 1000000
 USERNAME = re.compile(r"^[A-Za-z0-9.@_]{4,40}$")
+EMAIL_PARSER = Parser(policy=policy_default)
 
 
 def cleanup_output(body: str) -> str:
@@ -23,16 +29,49 @@ def cleanup_output(body: str) -> str:
     lines = list(map(lambda x: x.strip(), body.split('\n')))
     while len(lines) > 0 and HYPHENS.match(lines[-1]):
         lines = lines[:-1]
-    return html.unescape('\n'.join(lines).strip())
+    return html.unescape('\n'.join(lines)).strip().replace("=\n", '')
 
 
-def get_body(email: str) -> str:
-    # TODO: handle weird = truncations
-    email = LINEBREAKS.sub("\n", email).strip()
-    found: bool = False
+def get_body(email_text: typing.Union[str, EmailMessage]) -> str:
+    message: EmailMessage
+    if isinstance(email_text, str):
+        message = email.message_from_string(email_text, policy=policy_default)
+    else:
+        message = email_text
+
+    if message.is_multipart():
+        # prioritize rich parts
+        for record in message.iter_parts():
+            if record.get_content_type() == 'text/html':
+                return get_body(record)
+        # secondarily accept plain text
+        for record in message.iter_parts():
+            if record.get_content_type() == 'text/plain':
+                return get_body(record)
+        # tertiary-ily accept sub-multi-part text
+        for record in message.iter_parts():
+            if record.is_multipart():
+                return get_body(record)
+        print("=== WARNING: Encountered an unknown record. Debug info: ===")
+        for record in message.iter_parts():
+            print("Content Type: " + record.get_content_type())
+            print("Payload: " + record.get_payload())
+        print("=== End debug info ===")
+        return ""
+    else:
+        payload = message.get_payload(decode=True)
+        if isinstance(payload, bytes):
+            payload = payload.decode(encoding='UTF-8', errors='ignore')
+        return legacy_get_body(payload)  # some old emails are not properly parsed :(
+
+
+def legacy_get_body(email_text: str) -> str:
+    email_text = LINEBREAKS.sub("\n", email_text).strip()
+    # main email headers have already been removed by get_body so found is now True by default
+    found: bool = True
     has_section: bool = False
     lines = []
-    for line in email.split('\n'):
+    for line in email_text.split('\n'):
         line = line.strip()
         line_has_section = SECTION_PREFIX.match(line)
         line_has_suffix = SECTION_SUFFIX.match(line)
@@ -54,14 +93,15 @@ def get_body(email: str) -> str:
             found = True
 
     output = cleanup_output('\n'.join(lines))
-    if len(output) == 0:
+    if len(output) == 0 and len(cleanup_output(email_text)) > 0:
         with open('possible_errors.txt', 'a', encoding='UTF-8') as f:
-            f.write(email + "\n$%$%$%$%$%$%$%$%$%$%\n")
-        return ""
+            f.write(email_text + "\n$%$%$%$%$%$%$%$%$%$%\n")
+        return cleanup_output(email_text)
 
     try:
         # some bodies are base64-encoded
-        return cleanup_output(base64.b64decode(output.replace('\n', ''), validate=True).decode('UTF-8'))
+        abc = cleanup_output(base64.b64decode(output.replace('\n', ''), validate=True).decode('UTF-8'))
+        return abc
     # b64decode lies about the exceptions it throws, hence the general clause
     except Exception:
         return output
@@ -82,12 +122,12 @@ class Extractor:
         for file in os.listdir(data_dir):
             with open(os.path.join(data_dir, file), 'r') as file_data:
                 json_data = json.load(file_data)
-                json_data["knownAliases"] = set(json_data["knownAliases"])
-                json_data["knownGroups"] = set(json_data["knownGroups"])
                 user_id: int = int(file.split('.')[0])
                 data[user_id] = json_data
                 if user_id < FAKE_ID_MAX:
                     self.userless_ids[json_data['knownAliases'][0]] = user_id
+                json_data["knownAliases"] = set(json_data["knownAliases"])
+                json_data["knownGroups"] = set(json_data["knownGroups"])
         return data
 
     def save_user_data(self):
@@ -103,6 +143,7 @@ class Extractor:
         input_path = input_path if input_path is not None else "archives"
         for filename in sorted(os.listdir(input_path), key=lambda x: int(x.split('.')[1])):
             group = filename.split('.')[0]
+            print(f"Processing {group}")
             filename = os.path.join(input_path, filename)
             group_output_dir = os.path.join(self.output_dir_base, "groups", group)
             with open(filename, 'rb') as stream:

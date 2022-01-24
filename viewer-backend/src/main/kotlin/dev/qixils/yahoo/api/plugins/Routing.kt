@@ -27,9 +27,6 @@ val messageIndices = HashMap<String, List<Int>?>()
 val allGroups = HashSet<String>()
 const val MESSAGES_PER_PAGE = 50
 
-// TODO: setup 404 page like {"error":"API endpoint not found"}
-// TODO: init CORS
-
 fun Application.configureRouting() {
     routing {
         get("/v1/groups") {
@@ -137,6 +134,14 @@ fun Application.configureRouting() {
                     call.respond(HttpStatusCode.BadRequest, mapOf("error" to exc.message))
                 }
             }
+        }
+
+        get("/") {
+            call.respondRedirect("https://swagger.yahoo.qixils.dev/", permanent = true)
+        }
+
+        get("/{...}") {
+            call.respond(HttpStatusCode.NotFound, mapOf("error" to "The requested API could not be found"))
         }
     }
 }

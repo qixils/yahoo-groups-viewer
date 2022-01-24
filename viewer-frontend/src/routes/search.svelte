@@ -6,7 +6,7 @@
   import type GroupData from '$lib/Constants';
   import Error from "$lib/Error.svelte";
   import LabelFor from "$lib/LabelFor.svelte";
-	const groups_promise: Promise<GroupData> = fetch("http://localhost:8080/v1/groups").then(response => response.json());
+	const groups_promise: Promise<GroupData> = fetch("https://api.yahoo.qixils.dev/v1/groups").then(response => response.json());
   const pattern = "[A-Za-z0-9.@_]{4,40}"; // pattern for usernames; here because the {} causes issues when inline
 
   function unixSecondsOf(date: string): number {
@@ -75,7 +75,7 @@
       <div class="form_block">
         <LabelFor for_id="author_id" text="Author ID"/>
         <!-- TODO: ensure the max is accurate for other groups -->
-        <input id="author_id" placeholder="581586513" type="number" step="any" min=1 max=583000000 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <input id="author_id" placeholder="581586513" type="number" step="any" min=1 max=999999999 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
       </div>
 
       <!-- Author Alias -->

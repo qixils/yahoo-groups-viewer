@@ -1,8 +1,9 @@
 <script context="module" lang="ts">
+  export const router = false;
   /** @type {import('@sveltejs/kit').Load} */
   export async function load({ url, params, fetch }) {
-    const group: string = params.group
-    const query: string = url.search
+    const group: string = params.group;
+    const query: string = url.search;
 
     if (query === null || query.length === 0) {
       return {
@@ -16,10 +17,22 @@
       }
     }
 
-    const res: Response = await fetch(`http://localhost:8080/v1/messages/${group}/search${query}`);
-    const res_json: any = await res.json();
-
-    // TODO: handle timeouts & rejects
+    let res: Response;
+    let res_json: any;
+    try {
+      res = await fetch(`https://api.yahoo.qixils.dev/v1/messages/${group}/search${query}`);
+      res_json = await res.json();
+    } catch (error) {
+      return {
+        props: {
+          "group": group,
+          "results": {
+            "error": "The API server failed to respond and may be undergoing maintenance. The provided error message was <b>" + error + "</b>",
+            getError() { return this.error; }
+          }
+        }
+      }
+    }
 
     if (res_json.results === undefined && res_json.error === undefined) {
       return {
@@ -57,7 +70,7 @@
 
   function load_more() {
     offset += 50;
-    fetch(`http://localhost:8080/v1/messages/${group}/search${query}&offset=${offset}`)
+    fetch(`https://api.yahoo.qixils.dev/v1/messages/${group}/search${query}&offset=${offset}`)
     .then(resp => resp.json())
     .then((resp: ResultData) => {
       if (resp.error !== undefined || resp.results.length === 0) {

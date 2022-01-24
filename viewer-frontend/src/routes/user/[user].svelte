@@ -1,11 +1,23 @@
 <script context="module" lang="ts">
   /** @type {import('@sveltejs/kit').Load} */
   export async function load({ params, fetch }) {
-    const user: any = params.user
-    const user_res: Response = await fetch(`http://localhost:8080/v1/user/${user}`);
-    const user_res_json: any = await user_res.json();
-
-    // TODO: handle timeouts & rejects
+    const user: any = params.user;
+    let user_res: Response;
+    let user_res_json: any;
+    try {
+      user_res = await fetch(`https://api.yahoo.qixils.dev/v1/user/${user}`);
+      user_res_json = await user_res.json();
+    } catch (error) {
+      return {
+        props: {
+          "user_id": user,
+          "user": {
+            "error": "The API server failed to respond and may be undergoing maintenance. The provided error message was <b>" + error + "</b>",
+            getError() { return this.error; }
+          }
+        }
+      }
+    }
 
     if (user_res_json.id === undefined && user_res_json.error === undefined) {
       return {

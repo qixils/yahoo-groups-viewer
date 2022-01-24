@@ -1,12 +1,27 @@
 <script context="module" lang="ts">
+  export const router = false;
   /** @type {import('@sveltejs/kit').Load} */
   export async function load({ params, fetch }) {
-    const group: string = params.group
-    const page: any = params.page
-    const main_res: Response = await fetch(`http://localhost:8080/v1/messages/${group}/page/${page}`);
-    const main_res_json: any = await main_res.json();
-
-    // TODO: handle timeouts & rejects
+    const group: string = params.group;
+    const page: any = params.page;
+    let main_res: Response;
+    let main_res_json: any;
+    try {
+      main_res = await fetch(`https://api.yahoo.qixils.dev/v1/messages/${group}/page/${page}`);
+      main_res_json = await main_res.json();
+    } catch (error) {
+      return {
+        props: {
+          "group": group,
+          "page": [page],
+          "pages": 0,
+          "page_data": {
+            "error": "The API server failed to respond and may be undergoing maintenance. The provided error message was <b>" + error + "</b>",
+            getError() { return this.error; }
+          }
+        }
+      }
+    }
 
     if (main_res_json.messages === undefined && main_res_json.error === undefined) {
       return {
@@ -22,7 +37,7 @@
       }
     }
 
-    const sub_res: Response = await fetch(`http://localhost:8080/v1/messages/${group}/pages`)
+    const sub_res: Response = await fetch(`https://api.yahoo.qixils.dev/v1/messages/${group}/pages`)
 
     return {
       props: {
