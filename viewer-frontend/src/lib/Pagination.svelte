@@ -7,7 +7,7 @@
   end = Number(end)
 
   let pages: number[] = [];
-  for (let i = current-2; i < (current+5) && pages.length < 5; i++) {
+  for (let i = current-2; i < Math.min(end, (current+5)) && pages.length < 5; i++) {
     if (i > 0) {
       pages.push(i);
     }

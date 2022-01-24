@@ -17,7 +17,7 @@ LINEBREAKS = re.compile(r"\r?\n")
 # bizarre prefixes that are found in some messages
 SECTION_PREFIX = re.compile(r"^(?:-{5,}_?=_(?:Next)?Part_|--_?[0-9a-f]+-[0-9a-f]+-[0-9a-f]+(?:=:|-)[0-9a-f]+|Content-Type:|--[0-9A-Za-z]{36,})|Content-[Tt]ransfer-[Ee]ncoding:|--Boundary")
 # Yahoo! and antivirus software loved advertising themselves in email footers
-SECTION_SUFFIX = re.compile(r"^(?:Yahoo! Mail|Yahoo! FareChase|No virus found in this outgoing message.|YAHOO! GROUPS LINKS|Yahoo! Music Unlimited|Do You Yahoo!\?|Yahoo! Messenger|Yahoo! Personals|Yahoo! Model Search|Yahoo! DSL)")
+SECTION_SUFFIX = re.compile(r"^(?:Yahoo! Mail|Yahoo! FareChase|No virus found in this outgoing message.|YAHOO! GROUPS LINKS|Yahoo! Music Unlimited|Do You Yahoo!\?|Yahoo! Messenger|Yahoo! Personals|Yahoo! Model Search|Yahoo! DSL|More immediate than e-mail\?|Keine Mail mehr verpassen!|Lustige Emoticons|Die aktuelle Fr=FChj|Windows Live Messenger|Sjekk ut noen av de nye elektroniske tjenestene|Psssst! Schon vom neuen GMX MultiMessenger)")
 HYPHENS = re.compile(r"^[-_*]+$")
 FAKE_ID_MAX = 1000000
 USERNAME = re.compile(r"^[A-Za-z0-9.@_]{4,40}$")

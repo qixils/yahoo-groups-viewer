@@ -45,9 +45,12 @@
 </script>
 
 <svelte:head>
-	<title>Yahoo! Groups Viewer</title>
+	<title>Yahoo! Groups Viewer ∙ Search</title>
+	<meta property="og:title" content="Yahoo! Groups Viewer ∙ Search">
 	<meta name="description" content="Advanced search tool for finding specific emails sent to groups on the defunct website Yahoo! Groups.">
 	<meta property="og:description" content="Advanced search tool for finding specific emails sent to groups on the defunct website Yahoo! Groups.">
+  <meta property="og:url" content="https://yahoo.qixils.dev/search">
+	<link rel="canonical" href="https://yahoo.qixils.dev/search">
 </svelte:head>
 
 <header class="text-center">

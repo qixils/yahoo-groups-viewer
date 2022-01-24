@@ -63,6 +63,7 @@
 
 <svelte:head>
   <title>Yahoo! Groups Viewer ∙ {displayName}'s Profile</title>
+	<meta property="og:title" content="Yahoo! Groups Viewer ∙ {displayName}'s Profile">
   <meta name="description" content="{displayName}'s profile from the defunct website Yahoo! Groups.">
   <meta property="og:description" content="{displayName}'s profile from the defunct website Yahoo! Groups.">
   <meta name="robots" content="noindex">

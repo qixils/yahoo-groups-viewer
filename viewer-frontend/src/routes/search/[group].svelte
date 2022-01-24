@@ -95,9 +95,12 @@
 
 <svelte:head>
   <title>Yahoo! Groups Viewer ∙ Advanced Search Results</title>
+	<meta property="og:title" content="Yahoo! Groups Viewer ∙ Advanced Search Results">
   <meta name="description" content="Search results for a query in the {group} group on the defunct website Yahoo! Groups.">
   <meta property="og:description" content="Search results for a query in the {group} group on the defunct website Yahoo! Groups.">
   <meta name="robots" content="noindex">
+  <meta property="og:url" content="https://yahoo.qixils.dev/search/{group}{query}">
+  <link rel="canonical" href="https://yahoo.qixils.dev/search/{group}{query}">
 </svelte:head>
 
 <header class="text-center">

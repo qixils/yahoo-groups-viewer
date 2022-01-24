@@ -18,6 +18,7 @@
 
 <svelte:head>
     <title>Yahoo! Groups Viewer ∙ {status}</title>
+	<meta property="og:title" content="Yahoo! Groups Viewer ∙ {status}">
 </svelte:head>
 
 <header class="text-center">

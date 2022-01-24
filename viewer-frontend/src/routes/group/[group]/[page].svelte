@@ -67,6 +67,7 @@
 
 <svelte:head>
   <title>Yahoo! Groups Viewer ∙ Page {page}/{pages} of {group}</title>
+	<meta property="og:title" content="Yahoo! Groups Viewer ∙ Page {page}/{pages} of {group}">
   <meta name="description" content="An archive of emails sent to the {group} group on the defunct website Yahoo! Groups.">
   <meta property="og:description" content="An archive of emails sent to the {group} group on the defunct website Yahoo! Groups.">
   <meta name="robots" content="noindex">

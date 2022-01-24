@@ -14,8 +14,11 @@
 
 <svelte:head>
 	<title>Yahoo! Groups Viewer</title>
+	<meta property="og:title" content="Yahoo! Groups Viewer">
 	<meta name="description" content="A hub to view archives of emails sent to groups on the defunct website Yahoo! Groups.">
 	<meta property="og:description" content="A hub to view archives of emails sent to groups on the defunct website Yahoo! Groups.">
+	<meta property="og:url" content="https://yahoo.qixils.dev/">
+	<link rel="canonical" href="https://yahoo.qixils.dev/">
 </svelte:head>
 
 <main class="text-center max-w-2xl mx-auto">
