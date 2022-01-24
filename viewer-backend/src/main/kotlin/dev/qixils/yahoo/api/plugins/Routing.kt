@@ -136,6 +136,10 @@ fun Application.configureRouting() {
             }
         }
 
+        get("/favicon.{ext}") {
+            call.respondRedirect("https://i.qixils.dev/favicon." + call.parameters["ext"], permanent = true)
+        }
+
         get("/") {
             call.respondRedirect("https://swagger.yahoo.qixils.dev/", permanent = true)
         }
