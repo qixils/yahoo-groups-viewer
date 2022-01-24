@@ -56,7 +56,7 @@
 		(Apologies for the obfuscation; I'd like to keep my inbox safe from spam bots 😅)
 	</p>
 
-	<p class="mt-3">
+	<p class="mt-3 text-sm">
 		Note: The data on this website comes from Archive Team's periodic archives of Yahoo! Groups between
 		October 2015 and October 2018, with most of the Mario Kart groups being archived around late 2017
 		and early 2018. This means that a few years of data before the shutdown of Yahoo! Groups are missing.
