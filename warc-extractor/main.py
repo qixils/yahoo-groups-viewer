@@ -12,7 +12,7 @@ from email.parser import Parser
 
 from warcio.archiveiterator import ArchiveIterator
 
-MESSAGE_ID = re.compile(r"^org\.archive\.yahoogroups:v1/group/[a-z_]+/message/(\d+)/raw$")
+MESSAGE_ID = re.compile(r"^org\.archive\.yahoogroups:v1/group/[0-9a-z_]+/message/(\d+)/raw$")
 LINEBREAKS = re.compile(r"\r?\n")
 # bizarre prefixes that are found in some messages
 SECTION_PREFIX = re.compile(r"^(?:-{5,}_?=_(?:Next)?Part_|--_?[0-9a-f]+-[0-9a-f]+-[0-9a-f]+(?:=:|-)[0-9a-f]+|Content-Type:|--[0-9A-Za-z]{36,})|Content-[Tt]ransfer-[Ee]ncoding:|--Boundary")
