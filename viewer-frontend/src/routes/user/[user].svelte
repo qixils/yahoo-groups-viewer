@@ -5,7 +5,7 @@
     let user_res: Response;
     let user_res_json: any;
     try {
-      user_res = await fetch(`https://api.yahoo.qixils.dev/v1/user/${user}`);
+      user_res = await fetch(`https://yahoo.qixils.dev/v1/user/${user}`);
       user_res_json = await user_res.json();
     } catch (error) {
       return {

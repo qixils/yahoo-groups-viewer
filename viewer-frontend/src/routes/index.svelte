@@ -6,7 +6,7 @@
 	interface GroupData {
 		groups: string[];
 	}
-	let groups_promise: Promise<GroupData> = fetch("https://api.yahoo.qixils.dev/v1/groups").then(response => response.json())
+	let groups_promise: Promise<GroupData> = fetch("https://yahoo.qixils.dev/v1/groups").then(response => response.json())
 
     import Error from "$lib/Error.svelte";
 	let selected: string;

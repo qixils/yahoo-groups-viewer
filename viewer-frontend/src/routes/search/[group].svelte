@@ -20,7 +20,7 @@
     let res: Response;
     let res_json: any;
     try {
-      res = await fetch(`https://api.yahoo.qixils.dev/v1/messages/${group}/search${query}`);
+      res = await fetch(`https://yahoo.qixils.dev/v1/messages/${group}/search${query}`);
       res_json = await res.json();
     } catch (error) {
       return {
@@ -70,7 +70,7 @@
 
   function load_more() {
     offset += 50;
-    fetch(`https://api.yahoo.qixils.dev/v1/messages/${group}/search${query}&offset=${offset}`)
+    fetch(`https://yahoo.qixils.dev/v1/messages/${group}/search${query}&offset=${offset}`)
     .then(resp => resp.json())
     .then((resp: ResultData) => {
       if (resp.error !== undefined || resp.results.length === 0) {

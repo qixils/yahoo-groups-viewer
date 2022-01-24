@@ -7,7 +7,7 @@
     let main_res: Response;
     let main_res_json: any;
     try {
-      main_res = await fetch(`https://api.yahoo.qixils.dev/v1/messages/${group}/page/${page}`);
+      main_res = await fetch(`https://yahoo.qixils.dev/v1/messages/${group}/page/${page}`);
       main_res_json = await main_res.json();
     } catch (error) {
       return {
@@ -37,7 +37,7 @@
       }
     }
 
-    const sub_res: Response = await fetch(`https://api.yahoo.qixils.dev/v1/messages/${group}/pages`)
+    const sub_res: Response = await fetch(`https://yahoo.qixils.dev/v1/messages/${group}/pages`)
 
     return {
       props: {

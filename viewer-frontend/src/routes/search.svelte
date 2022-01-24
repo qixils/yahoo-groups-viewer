@@ -6,7 +6,7 @@
   import type GroupData from '$lib/Constants';
   import Error from "$lib/Error.svelte";
   import LabelFor from "$lib/LabelFor.svelte";
-	const groups_promise: Promise<GroupData> = fetch("https://api.yahoo.qixils.dev/v1/groups").then(response => response.json());
+	const groups_promise: Promise<GroupData> = fetch("https://yahoo.qixils.dev/v1/groups").then(response => response.json());
   const pattern = "[A-Za-z0-9.@_]{4,40}"; // pattern for usernames; here because the {} causes issues when inline
 
   function unixSecondsOf(date: string): number {

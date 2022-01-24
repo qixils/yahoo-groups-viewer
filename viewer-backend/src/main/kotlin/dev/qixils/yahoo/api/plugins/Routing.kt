@@ -141,7 +141,7 @@ fun Application.configureRouting() {
         }
 
         get("/") {
-            call.respondRedirect("https://swagger.yahoo.qixils.dev/", permanent = true)
+            call.respondRedirect("https://swagger.qixils.dev/", permanent = true)
         }
 
         get("/{...}") {
