@@ -24,6 +24,7 @@ jobs:
           cache-dependency-path: viewer-frontend/package-lock.json
 
       - name: Build with Node
+        working-directory: viewer-frontend
         run: npm run build
 
 #      - name: Upload Artifact
