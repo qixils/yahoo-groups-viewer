@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ 'lts', 'latest' ]
+        node: [ 'current', 'latest' ]
     name: Build on Node ${{ matrix.Node }}
 
     steps:
