@@ -23,6 +23,10 @@ jobs:
           cache: npm
           cache-dependency-path: viewer-frontend/package-lock.json
 
+      - name: Install NPM Packages
+        working-directory: viewer-frontend
+        run: npm install -g
+
       - name: Build with Node
         working-directory: viewer-frontend
         run: npm run build
