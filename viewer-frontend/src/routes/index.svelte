@@ -53,10 +53,8 @@
 	</p>
 
 	<p>
-		If a group that you would like to view is unavailable, please reach out to
-		me on <a href="https://twitter.com/lexikiq">Twitter</a> or fire an email to
-		<span class="text-pink-500 underline">&lt;my first name&gt; at this domain</span>.
-		(Apologies for the obfuscation; I'd like to keep my inbox safe from spam bots 😅)
+		If a group that you would like to view is unavailable, please fire an email to
+    <a href="mailto:lexi+yahoo@qixils.dev">lexi+yahoo@qixils.dev</a>.
 	</p>
 
 	<p class="mt-3 text-sm">
